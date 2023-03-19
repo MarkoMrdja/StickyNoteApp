@@ -1,26 +1,27 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
+</head>
+<body>
+    {% if tasks|length < 1  %}
+        <h4>There are no notes. Create one below!</h4>
+    {% else %}
+    <ul>
+      {% for task in tasks %}
+      <li>
+        <a href="note/{{ task.id }}">
+          <h2>{{ task.title }}</h2>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
 
-{% block head %}
 
-{% endblock %}
-
-{% block body %}
-
-{% if tasks|length < 1  %}
-    <h4>There are no notes. Create one below!</h4>
-{% else %}
-<ul>
-  {% for task in tasks %}
-  <li>
-    <a href="note/{{ task.id }}">
-      <h2>{{ task.title }}</h2>
-    </a>
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
-
-
-<button class="update-button" onclick="location.href='/create-note'">Create a Note</button>
-
-{% endblock %}
+    <button class="update-button" onclick="location.href='/create-note'">Create a Note</button>
+</body>
+</html>

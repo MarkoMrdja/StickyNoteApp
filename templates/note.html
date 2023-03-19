@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ note_title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/note-style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
-</head>
-<body>
+{% extends 'note-base.html' %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block body %}
     <form method="POST">
         <div class="note">
-            <input type="text" id="note_title" name="note_title" value="{{ note_title }}">
+            <input type="text" id="note_title" name="note_title" value="{{ note_title }}" placeholder="Input your title here..">
             <br>
-            <textarea id="note_content" name="note_content" rows="4" cols="50">{{ note_content }}</textarea>
+            <textarea id="note_content" name="note_content" rows="4" cols="50" placeholder="Input your note content here..">{{ note_content }}</textarea>
         </div>
         <div class="button-container">
           <button type="submit" class="update-button">Update</button>
@@ -21,5 +19,4 @@
              onclick="return confirm('Are you sure you want to cancel editing the note?')">Cancel</a>
         </div>
     </form>
-</body>
-</html>
+{% endblock %}

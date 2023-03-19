@@ -47,7 +47,7 @@ def create_note():
     return render_template('create-note.html', note_title=note_title, note_content=note_content)
 
 
-@app.route('/note/<int:id>', methods=['POST', 'GET', 'DELETE'])
+@app.route('/note/<int:id>', methods=['POST', 'GET'])
 def note(id):
     task = ToDoNote.query.get_or_404(id)
     if request.method == 'POST':
