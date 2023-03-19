@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ note_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/note-style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
+</head>
+<body>
+    <form method="POST">
+        <div class="note">
+            <input type="text" id="note_title" name="note_title" value="{{ note_title }}">
+            <br>
+            <textarea id="note_content" name="note_content" rows="4" cols="50">{{ note_content }}</textarea>
+        </div>
+        <div class="button-container">
+          <button type="submit" class="update-button">Update</button>
+          <a class="delete-button" href="{{ url_for('delete', id=note_id) }}"
+             onclick="return confirm('Are you sure you want to delete this note?')">Delete</a>
+          <a class="cancel-button" href="{{ url_for('home') }}"
+             onclick="return confirm('Are you sure you want to cancel editing the note?')">Cancel</a>
+        </div>
+    </form>
+</body>
+</html>
