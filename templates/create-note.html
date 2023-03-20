@@ -1,11 +1,11 @@
-{% extends 'note-base.html' %}
+{% extends 'base.html' %}
 
 {% block header %}
-
+    <title>{{ note_title }}</title>
 {% endblock %}
 
 {% block body %}
-    <form method="POST">
+    <form class="note-form" method="POST">
         <div class="note">
             <input type="text" id="note_title" name="note_title" value="{{ note_title }}" placeholder="Input your title here..">
             <br>

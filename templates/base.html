@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
+    {% block header %}
+
+    {% endblock %}
+</head>
+<body>
+     <nav class="navbar">
+        <div class="logo">
+            <ul class="nav-links">
+                <div class="menu">
+                    <li class="nav-li"><a class="nav-a" href="{{ url_for('home') }}">Home</a></li>
+                    <li class="nav-li"><a class="nav-a" href="{{ url_for('create_note') }}">Create a Note</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-li"><a class="nav-a" href="{{ url_for('logout') }}">Logout</a></li>
+                        <li class="nav-li"><a class="nav-a" href="{{ url_for('dashboard') }}">Profile</a></li>
+                    {% else %}
+                        <li class="nav-li"><a class="nav-a" href="{{ url_for('login') }}">Login</a></li>
+                        <li class="nav-li"><a class="nav-a" href="{{ url_for('register') }}">Register</a></li>
+                    {% endif %}
+                </div>
+            </ul>
+        </div>
+    </nav>
+    {% block body %}
+
+    {% endblock %}
+
+</body>
+</html>
