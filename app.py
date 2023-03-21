@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms.validators import InputRequired, Length, ValidationError, DataRequired
 from flask_bcrypt import Bcrypt
 import os
 from dotenv import load_dotenv
@@ -30,19 +30,22 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-class ToDoNote(db.Model):
+class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(20), nullable=False)
     content = db.Column(db.String(300), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __rep__(self):
         return '<Task %r>' % self.id
 
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
+    notes = db.relationship('Note', backref='user')
 
 
 class RegisterForm(FlaskForm):
@@ -62,6 +65,11 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Login")
 
 
+class SearchForm(FlaskForm):
+    searched = StringField("Searched", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
 with app.app_context():
     db.create_all()
 
@@ -71,16 +79,21 @@ def home():
     if request.method == 'POST':
         pass
     else:
-        tasks = ToDoNote.query.all()
-        return render_template("index.html", tasks=tasks)
+        if current_user.is_authenticated:
+            tasks = Note.query.filter_by(user_id=current_user.id).all()
+            return render_template("index.html", tasks=tasks)
+        else:
+            tasks = []
+            return render_template("index.html", tasks=tasks)
 
 
 @app.route('/create-note', methods=['POST', 'GET'])
+@login_required
 def create_note():
     if request.method == 'POST':
         note_title = request.form['note_title']
         note_content = request.form['note_content']
-        new_task = ToDoNote(title=note_title, content=note_content)
+        new_task = Note(title=note_title, content=note_content, user_id=current_user.id)
         try:
             db.session.add(new_task)
             db.session.commit()
@@ -94,8 +107,11 @@ def create_note():
 
 
 @app.route('/note/<int:id>', methods=['POST', 'GET'])
+@login_required
 def note(id):
-    task = ToDoNote.query.get_or_404(id)
+    task = Note.query.get_or_404(id)
+    if current_user.id != task.user_id:
+        return 'Nemate pristup ovog belesci'
     if request.method == 'POST':
         task.content = request.form['note_content']
         task.title = request.form['note_title']
@@ -112,7 +128,7 @@ def note(id):
 
 @app.route('/delete/<int:id>')
 def delete(id):
-    task_to_delete = ToDoNote.query.get_or_404(id)
+    task_to_delete = Note.query.get_or_404(id)
     try:
         db.session.delete(task_to_delete)
         db.session.commit()
@@ -129,7 +145,7 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                return redirect(url_for('dashboard'))
+                return redirect(url_for('home'))
     return render_template('login.html', form=form)
 
 
@@ -138,7 +154,7 @@ def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         new_user = User(username=form.username.data, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
@@ -159,6 +175,22 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
+@app.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    notes = Note.query
+    if form.validate_on_submit():
+        note.searched = form.searched.data
+        notes = notes.filter(Note.title.like('%' + note.searched + '%'))
+        notes = notes.order_by(Note.title).all()
+        return render_template("search.html", form=form, searched=note.searched, notes=notes)
+
+
+@app.context_processor
+def base():
+    form = SearchForm()
+    return dict(form=form)
 
 
 if __name__ == '__main__':

@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <title>Sticky Note Hub</title>
+
 {% endblock %}
 
 {% block body %}
 
-    {% if tasks|length < 1  %}
+    {% if notes|length < 1  %}
         <h4>There are no notes. Create one!</h4>
     {% else %}
     <ul class="note-ul">
-      {% for task in tasks %}
+      {% for note in notes %}
       <li class="note-li">
-        <a class="note-a" href="note/{{ task.id }}">
-          <h2>{{ task.title }}</h2>
+        <a class="note-a" href="note/{{ note.id }}">
+          <h2>{{ note.title }}</h2>
         </a>
       </li>
       {% endfor %}
