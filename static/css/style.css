@@ -209,3 +209,8 @@ p {
 ::placeholder {
   color: #bfbfbf;
 }
+
+.corkwood-bg {
+  background-image: url('../images/cboard.jpg');
+  background-repeat: repeat;
+}
